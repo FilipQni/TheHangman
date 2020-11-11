@@ -80,7 +80,7 @@ namespace TheHangman
                         userGuess = Console.ReadLine();
                         if (userGuess.Length != 1) continue;
 
-                        if (checkLetter(userGuess[0], capitalToGuess, isLetterGuessed, ref wrongLetters))
+                        if (CheckLetter(userGuess[0], capitalToGuess, isLetterGuessed, ref wrongLetters))
                         {
                             Console.WriteLine("Well done!");
                             Thread.Sleep(2000);
@@ -160,11 +160,11 @@ namespace TheHangman
                 counter++;
             }
             Console.Write("\n\n");
-            drawHangman(lifes);
+            DrawHangman(lifes);
 
         }
 
-        private static bool checkLetter(char letter, string word, bool[] isLetterGuessed, ref string wrongLetters)
+        private static bool CheckLetter(char letter, string word, bool[] isLetterGuessed, ref string wrongLetters)
         {
             bool correct = false;
             for (int i = 0; i < word.Length; i++)
@@ -184,7 +184,7 @@ namespace TheHangman
 
         }
 
-        private static void drawHangman(int lifes)
+        private static void DrawHangman(int lifes)
         {
             switch (lifes)
             {
