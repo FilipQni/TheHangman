@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Globalization;
 
 namespace TheHangman
 {
@@ -45,6 +46,7 @@ namespace TheHangman
 
         private static void Game(List<countryAndCapitalStruct> countryAndCapitalList)
         {
+            bool winGame = false;
             int randomIndex;
             int lifes = 6;
             int lettersLeft = 0;
@@ -78,7 +80,7 @@ namespace TheHangman
                         userGuess = Console.ReadLine();
                         if (userGuess.Length != 1) continue;
 
-                        if (CheckLetter(userGuess[0], capitalToGuess, isLetterGuessed, ref wrongLetters))
+                        if (checkLetter(userGuess[0], capitalToGuess, isLetterGuessed, ref wrongLetters))
                         {
                             Console.WriteLine("Well done!");
                             Thread.Sleep(2000);
@@ -92,10 +94,33 @@ namespace TheHangman
                     }
                     if (choice.KeyChar == '2')
                     {
+                        Console.WriteLine("Write a capital");
+                        userGuess = Console.ReadLine();
+                        if (userGuess.Length < 2) continue;
 
+                        if (String.Compare(capitalToGuess, userGuess, true) == 0)
+                        {
+                            Console.WriteLine("Well done!");
+                            Thread.Sleep(2000);
+                            winGame = true;
+                        }
+                        else
+                        {
+                            Console.WriteLine("Wrong capital!");
+                            Thread.Sleep(2000);
+                            lifes--;
+                        }
                     }
                 } while (choice.KeyChar != '1' && choice.KeyChar != '2');
 
+                if (winGame)
+                {
+                    Console.Clear();
+                    Console.WriteLine("YOU WON!!!!");
+                    Console.WriteLine("Wait to play again");
+                    Thread.Sleep(5000);
+                    break;
+                }
             }
         }
 
@@ -135,17 +160,17 @@ namespace TheHangman
                 counter++;
             }
             Console.Write("\n\n");
-            DrawHangman(lifes);
+            drawHangman(lifes);
 
         }
 
-        private static bool CheckLetter(char letter, string word, bool[] isLetterGuessed, ref string wrongLetters)
+        private static bool checkLetter(char letter, string word, bool[] isLetterGuessed, ref string wrongLetters)
         {
             bool correct = false;
             for (int i = 0; i < word.Length; i++)
             {
-                if (letter == word[i])
-                {
+                if (char.ToLower(letter) == char.ToLower(word[i]))   
+                    {
                     correct = true;
                     isLetterGuessed[i] = true;
                 }
@@ -159,7 +184,7 @@ namespace TheHangman
 
         }
 
-        private static void DrawHangman(int lifes)
+        private static void drawHangman(int lifes)
         {
             switch (lifes)
             {
