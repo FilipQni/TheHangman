@@ -53,13 +53,14 @@ namespace TheHangman
             string userGuess;
             string capitalToGuess;
             string wrongLetters = "";
-            bool[] isLetterGuessed = new bool[countryAndCapitalList.Count];
+            bool[] isLetterGuessed;
             ConsoleKeyInfo choice;
 
             Console.Clear();
             Random rnd = new Random();
             randomIndex = rnd.Next(countryAndCapitalList.Count);                      //  picking a random pair of
             capitalToGuess = countryAndCapitalList.ElementAt(randomIndex).capital;    //  country and it's capitol
+            isLetterGuessed = new bool[capitalToGuess.Length];
 
             for (int i = 0; i < capitalToGuess.Length; i++)
             {
@@ -111,11 +112,13 @@ namespace TheHangman
                             lifes--;
                         }
                     }
+
                 } while (choice.KeyChar != '1' && choice.KeyChar != '2');
+
+                if (IsWordGuessed(isLetterGuessed)) winGame = true;
 
                 if (winGame)
                 {
-                    Console.Clear();
                     Console.WriteLine("YOU WON!!!!");
                     Console.WriteLine("Wait to play again");
                     Thread.Sleep(5000);
@@ -169,8 +172,8 @@ namespace TheHangman
             bool correct = false;
             for (int i = 0; i < word.Length; i++)
             {
-                if (char.ToLower(letter) == char.ToLower(word[i]))   
-                    {
+                if (char.ToLower(letter) == char.ToLower(word[i]))
+                {
                     correct = true;
                     isLetterGuessed[i] = true;
                 }
@@ -183,7 +186,16 @@ namespace TheHangman
             }
 
         }
+        private static bool IsWordGuessed(bool[] isLetterGuessed)
+        {
+            foreach (bool flag in isLetterGuessed)
+            {
+                if (!flag) return false;
 
+            }
+            return true;
+
+        }
         private static void DrawHangman(int lifes)
         {
             switch (lifes)
