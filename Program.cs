@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using System.Timers;
 
 namespace TheHangman
 {
@@ -47,12 +49,14 @@ namespace TheHangman
             bool winGame = false;
             int randomIndex;
             int lifes = 6;
-            int lettersLeft = 0;
+            int guessedLettersNumber = 0;
             string userGuess;
             string capitalToGuess;
             string wrongLetters = "";
             bool[] isLetterGuessed;
             ConsoleKeyInfo choice;
+            Stopwatch stopwatch = new Stopwatch();
+            TimeSpan timeSpan;
 
             Console.Clear();
             Random rnd = new Random();
@@ -66,9 +70,21 @@ namespace TheHangman
                 else isLetterGuessed[i] = false;
             }
 
+            stopwatch.Start();
+
             while (lifes > 0)
             {
-                CreateGameInterface(lifes, lettersLeft, capitalToGuess, isLetterGuessed, wrongLetters);
+                CreateGameInterface(lifes, capitalToGuess, isLetterGuessed, wrongLetters);
+
+                if (winGame)
+                {
+                    stopwatch.Stop();
+                    timeSpan = stopwatch.Elapsed;
+                    Console.WriteLine("YOU WON!!!!");
+                    Console.WriteLine("You guessed the capital after " + guessedLettersNumber + " letters");
+                    Console.WriteLine("Your time: " + timeSpan.Seconds + " seconds");
+                    break;
+                }
 
                 do
                 {
@@ -79,7 +95,7 @@ namespace TheHangman
                         userGuess = Console.ReadLine();
                         if (userGuess.Length != 1) continue;
 
-                        if (CheckLetter(ref lifes, userGuess[0], capitalToGuess, isLetterGuessed, ref wrongLetters))
+                        if (CheckLetter(ref guessedLettersNumber, ref lifes, userGuess[0], capitalToGuess, isLetterGuessed, ref wrongLetters))
                         {
                             Console.WriteLine("Well done!");
                             Thread.Sleep(2000);
@@ -106,7 +122,7 @@ namespace TheHangman
                         {
                             Console.WriteLine("Wrong capital!");
                             Thread.Sleep(2000);
-                            lifes--;
+                            lifes -= 2;
                         }
                     }
 
@@ -114,30 +130,28 @@ namespace TheHangman
 
                 if (IsWordGuessed(isLetterGuessed)) winGame = true;
 
-                if (winGame)
-                {
-                    Console.WriteLine("YOU WON!!!!");
-                    break;
-                }
             }
 
             if (!winGame)
             {
+                stopwatch.Stop();
+                timeSpan = stopwatch.Elapsed;
                 Console.WriteLine("You lost...");
+                Console.WriteLine("You guessed " + guessedLettersNumber +  " letters");
                 Console.WriteLine("The Capital that you had to guess: " + capitalToGuess);
+                Console.WriteLine("Your time: " + timeSpan.Seconds + " seconds");
             }
 
             Console.WriteLine("\nWould you like to start? (press s to start, e to exit)");
         }
 
-        private static void CreateGameInterface(int lifes, int lettersLeft, string capitalToGuess, bool[] isLetterGuessed, string wrongLetters)
+        private static void CreateGameInterface(int lifes, string capitalToGuess, bool[] isLetterGuessed, string wrongLetters)
         {
             int counter = 0;
 
             Console.Clear();
             Console.WriteLine(capitalToGuess);
-            Console.WriteLine("Press 1 to guess a letter, press 2 to guess whole word");
-            Console.WriteLine("zostało znaków: " + lettersLeft);
+            Console.WriteLine("Press 1 to guess a letter, press 2 to guess a whole word");
             Console.WriteLine("Lifes: " + lifes);
             Console.Write("Wrong letters: ");
             foreach (char letter in wrongLetters)
@@ -169,9 +183,11 @@ namespace TheHangman
             DrawHangman(lifes);
         }
 
-        private static bool CheckLetter(ref int lifes, char letter, string word, bool[] isLetterGuessed, ref string wrongLetters)
+        private static bool CheckLetter(ref int guessedLetters, ref int lifes, char letter, string word, bool[] isLetterGuessed, ref string wrongLetters)
         {
             bool correct = false;
+            bool firstTime = true;
+
             for (int i = 0; i< wrongLetters.Length; i++)
             {
                 if (letter == wrongLetters[i])
@@ -185,6 +201,11 @@ namespace TheHangman
                 {
                     correct = true;
                     isLetterGuessed[i] = true;
+                    if (firstTime)
+                    {
+                        firstTime = !firstTime;
+                        guessedLetters++;
+                    }
                 }
             }
             if (correct) return true;
