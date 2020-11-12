@@ -71,9 +71,10 @@ namespace TheHangman
             short gameStatus = 0;
             int randomIndex;
             int lifes = 6;
-            int guessedLettersNumber = 0;
+            int guessesNumber = 0;
             string userGuess;
             string capitalToGuess;
+            string countryOfCapitalToGuess;
             string wrongLetters = "";
             bool[] isLetterGuessed;
             ConsoleKeyInfo choice;
@@ -84,6 +85,7 @@ namespace TheHangman
             Random rnd = new Random();
             randomIndex = rnd.Next(countryAndCapitalList.Count);                      //  picking a random pair of
             capitalToGuess = countryAndCapitalList.ElementAt(randomIndex).Capital;    //  country and it's capitol
+            countryOfCapitalToGuess = countryAndCapitalList.ElementAt(randomIndex).Country;
             isLetterGuessed = new bool[capitalToGuess.Length];
 
             for (int i = 0; i < capitalToGuess.Length; i++)
@@ -96,14 +98,14 @@ namespace TheHangman
 
             while (lifes > 0)
             {
-                CreateGameInterface(lifes, capitalToGuess, isLetterGuessed, wrongLetters, gameStatus);
+                CreateGameInterface(lifes, countryOfCapitalToGuess, capitalToGuess, isLetterGuessed, wrongLetters, gameStatus);
 
-                if (winGame)
+                if (winGame)        // check if game is done
                 {
                     stopwatch.Stop();
                     timeSpan = stopwatch.Elapsed;
                     Console.WriteLine("YOU WON!!!!");
-                    Console.WriteLine("You guessed the capital after " + guessedLettersNumber + " letters");
+                    Console.WriteLine("You guessed the capital after " + guessesNumber + " letters");    
                     Console.WriteLine("Your time: " + timeSpan.Seconds + " seconds");
                     break;
                 }
@@ -117,13 +119,13 @@ namespace TheHangman
                         userGuess = Console.ReadLine();
                         if (userGuess.Length != 1) continue;
 
-                        if (CheckLetter(ref guessedLettersNumber, ref lifes, userGuess[0], capitalToGuess, isLetterGuessed, ref wrongLetters))
+                        if (CheckLetter(ref guessesNumber, ref lifes, userGuess[0], capitalToGuess, isLetterGuessed, ref wrongLetters))
                         {
-                            gameStatus = 1;
+                            gameStatus = 1;        // gameStatus = 1 means correct letter
                         }
                         else
                         {
-                            gameStatus = 2;
+                            gameStatus = 2;        // gameStatus = 2 means wrong letter
                         }
                     }
                     if (choice.KeyChar == '2')
@@ -135,11 +137,12 @@ namespace TheHangman
                         if (String.Compare(capitalToGuess, userGuess, true) == 0)
                         {
                             gameStatus = 3;
-                            winGame = true;
+                            winGame = true;            // gameStatus = 3 means correct word         
                         }
                         else
                         {
-                            gameStatus = 4;
+                            gameStatus = 4;            // gameStatus = 4 means wrong word
+                            guessesNumber++;
                             lifes -= 2;
                         }
                     }
@@ -155,21 +158,20 @@ namespace TheHangman
                 stopwatch.Stop();
                 timeSpan = stopwatch.Elapsed;
                 Console.WriteLine("You lost...");
-                Console.WriteLine("You guessed " + guessedLettersNumber + " letters");
+                Console.WriteLine("You guessed " + guessesNumber + " letters");
                 Console.WriteLine("The Capital that you had to guess: " + capitalToGuess);
                 Console.WriteLine("Your time: " + timeSpan.Seconds + " seconds\n");
             }
 
-            ScoreBoard(playerName, timeSpan.Seconds, guessedLettersNumber, capitalToGuess);
+            ScoreBoard(playerName, timeSpan.Seconds, guessesNumber, capitalToGuess, winGame);           
             Console.WriteLine("\nWould you like to start next game? (press s to start, e to exit)");
         }
 
-        private static void CreateGameInterface(int lifes, string capitalToGuess, bool[] isLetterGuessed, string wrongLetters, short gameStatus)
+        private static void CreateGameInterface(int lifes, string countryOfCapitalToGuess, string capitalToGuess, bool[] isLetterGuessed, string wrongLetters, short gameStatus)
         {
             int counter = 0;
 
             Console.Clear();
-            Console.WriteLine(capitalToGuess);
             Console.WriteLine("Press 1 to guess a letter, press 2 to guess a whole word");
             Console.WriteLine("Lifes: " + lifes);
             Console.Write("Wrong letters: ");
@@ -202,6 +204,11 @@ namespace TheHangman
             Console.Write("\n");
             Console.WriteLine();
             DrawHangman(lifes);
+
+            if (lifes == 1)
+            {
+                Console.WriteLine("The capital of {0}", countryOfCapitalToGuess);
+            }
 
             switch (gameStatus)
             {
@@ -269,7 +276,7 @@ namespace TheHangman
 
         }
 
-        private static void ScoreBoard(string playerName, int seconds, int guessedLettersNumber, string capitalToGuess)
+        private static void ScoreBoard(string playerName, int seconds, int guessedLettersNumber, string capitalToGuess, bool winGame)
         {
             string line;
             string[] data;
@@ -293,26 +300,31 @@ namespace TheHangman
             fileWithTop10.Close();
             StreamWriter fileToSave = new StreamWriter(@"E:\Projekty\TheHangmanGame\TheHangman\resources\top10.txt", false);
 
-            playerStatsBox.Name = playerName;
-            playerStatsBox.Date = thisDay.ToString();
-            playerStatsBox.GuessingTime = seconds;
-            playerStatsBox.GuessedLettters = guessedLettersNumber;
-            playerStatsBox.GuessedCapital = capitalToGuess;
+            if (winGame)
+            {
+                playerStatsBox.Name = playerName;
+                playerStatsBox.Date = thisDay.ToString();
+                playerStatsBox.GuessingTime = seconds;
+                playerStatsBox.GuessedLettters = guessedLettersNumber;
+                playerStatsBox.GuessedCapital = capitalToGuess;
 
-            playersStatsList.Add(playerStatsBox);
+
+                playersStatsList.Add(playerStatsBox);
+            }
 
             List<PlayerStats> playerStatsSortedList = playersStatsList.OrderBy(playerStats => playerStats.GuessingTime).ToList();
 
             if (playerStatsSortedList.Count == 11) playerStatsSortedList.RemoveAt(playerStatsSortedList.Count - 1);
 
-            Console.Write("\n");
+            line = String.Format("Top 10 scores:  (name | date | time | tries | capital)");
+            Console.WriteLine(line);
             foreach (PlayerStats playerStatsDummy in playerStatsSortedList)
             {
                 line = (playerStatsDummy.Name + " | " + playerStatsDummy.Date + " | " + playerStatsDummy.GuessingTime
                 + " | " + playerStatsDummy.GuessedLettters + " | " + playerStatsDummy.GuessedCapital);
 
                 Console.WriteLine(line);
-                fileToSave.WriteLine(line); //nie kasuje tego, co było wcześniej
+                fileToSave.WriteLine(line);
             }
             fileToSave.Close();
 
@@ -322,67 +334,67 @@ namespace TheHangman
             switch (lifes)
             {
                 case 0:
-                    Console.WriteLine("  +---+");
-                    Console.WriteLine("  |   |");
-                    Console.WriteLine("  O   |");
+                    Console.WriteLine(@"  +---+");
+                    Console.WriteLine(@"  |   |");
+                    Console.WriteLine(@"  O   |");
                     Console.WriteLine(@" /|\  |");
                     Console.WriteLine(@" / \  |");
-                    Console.WriteLine("      |");
-                    Console.WriteLine("=========");
+                    Console.WriteLine(@"      |");
+                    Console.WriteLine(@"=========");
                     break;
                 case 1:
-                    Console.WriteLine("  +---+");
-                    Console.WriteLine("  |   |");
-                    Console.WriteLine("  O   |");
+                    Console.WriteLine(@"  +---+");
+                    Console.WriteLine(@"  |   |");
+                    Console.WriteLine(@"  O   |");
                     Console.WriteLine(@" /|\  |");
-                    Console.WriteLine(" /    |");
-                    Console.WriteLine("      |");
-                    Console.WriteLine("=========");
+                    Console.WriteLine(@" /    |");
+                    Console.WriteLine(@"      |");
+                    Console.WriteLine(@"=========");
                     break;
                 case 2:
-                    Console.WriteLine("  +---+");
-                    Console.WriteLine("  |   |");
-                    Console.WriteLine("  O   |");
+                    Console.WriteLine(@"  +---+");
+                    Console.WriteLine(@"  |   |");
+                    Console.WriteLine(@"  O   |");
                     Console.WriteLine(@" /|\  |");
-                    Console.WriteLine("      |");
-                    Console.WriteLine("      |");
-                    Console.WriteLine("=========");
+                    Console.WriteLine(@"      |");
+                    Console.WriteLine(@"      |");
+                    Console.WriteLine(@"=========");
                     break;
                 case 3:
-                    Console.WriteLine("  +---+");
-                    Console.WriteLine("  |   |");
-                    Console.WriteLine("  O   |");
-                    Console.WriteLine(" /|   |");
-                    Console.WriteLine("      |");
-                    Console.WriteLine("      |");
-                    Console.WriteLine("=========");
+                    Console.WriteLine(@"  +---+");
+                    Console.WriteLine(@"  |   |");
+                    Console.WriteLine(@"  O   |");
+                    Console.WriteLine(@" /|   |");
+                    Console.WriteLine(@"      |");
+                    Console.WriteLine(@"      |");
+                    Console.WriteLine(@"=========");
                     break;
                 case 4:
-                    Console.WriteLine("  +---+");
-                    Console.WriteLine("  |   |");
-                    Console.WriteLine("  O   |");
-                    Console.WriteLine("  |   |");
-                    Console.WriteLine("      |");
-                    Console.WriteLine("      |");
-                    Console.WriteLine("=========");
+                    Console.WriteLine(@"  +---+");
+                    Console.WriteLine(@"  |   |");
+                    Console.WriteLine(@"  O   |");
+                    Console.WriteLine(@"  |   |");
+                    Console.WriteLine(@"      |");
+                    Console.WriteLine(@"      |");
+                    Console.WriteLine(@"=========");
                     break;
                 case 5:
-                    Console.WriteLine("  +---+");
-                    Console.WriteLine("  |   |");
-                    Console.WriteLine("  O   |");
-                    Console.WriteLine("      |");
-                    Console.WriteLine("      |");
-                    Console.WriteLine("      |");
-                    Console.WriteLine("=========");
+                    Console.WriteLine(@"  +---+");
+                    Console.WriteLine(@"  |   |");
+                    Console.WriteLine(@"  O   |");
+                    Console.WriteLine(@"      |");
+                    Console.WriteLine(@"      |");
+                    Console.WriteLine(@"      |");
+                    Console.WriteLine(@"=========");
                     break;
                 case 6:
-                    Console.WriteLine("  +---+");
-                    Console.WriteLine("  |   |");
-                    Console.WriteLine("      |");
-                    Console.WriteLine("      |");
-                    Console.WriteLine("      |");
-                    Console.WriteLine("      |");
-                    Console.WriteLine("=========");
+                    Console.WriteLine(@"  +---+");
+                    Console.WriteLine(@"  |   |");
+                    Console.WriteLine(@"      |");
+                    Console.WriteLine(@"      |");
+                    Console.WriteLine(@"      |");
+                    Console.WriteLine(@"      |");
+                    Console.WriteLine(@"=========");
                     break;
                 default:
                     Console.WriteLine("Error");
