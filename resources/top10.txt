@@ -1,1 +1,10 @@
-﻿
+szef | 12.11.2020 21:52:27 | 2 | 0 | Lisbon
+szef | 12.11.2020 21:52:31 | 2 | 0 | Manila
+szef | 12.11.2020 21:52:14 | 3 | 0 | Brazzaville
+test | 12.11.2020 21:52:00 | 4 | 0 | Madrid
+szef | 12.11.2020 21:52:46 | 5 | 0 | Reykjavik
+karol | 12.11.2020 21:33:57 | 6 | 0 | Port Louis
+kamol | 12.11.2020 21:36:00 | 7 | 0 | Praia
+filip | 12.11.2020 21:35:04 | 8 | 0 | Kigali
+kruchy | 12.11.2020 21:51:41 | 11 | 0 | Tehran
+maciek | 12.11.2020 21:34:36 | 25 | 2 | Ottawa
