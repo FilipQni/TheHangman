@@ -2,25 +2,24 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using System.Globalization;
 
 namespace TheHangman
 {
     class Program
     {
 
-        public struct countryAndCapitalStruct
+        public struct CountryAndCapitalStruct
         {
-            public string country { get; set; }
-            public string capital { get; set; }
+            public string Country { get; set; }
+            public string Capital { get; set; }
         }
 
         static void Main(string[] args)
         {
             string line;
-            string[] words = new string[2];
-            var countryAndCapitalList = new List<countryAndCapitalStruct>();
-            var box = new countryAndCapitalStruct();
+            string[] words;
+            var countryAndCapitalList = new List<CountryAndCapitalStruct>();
+            var box = new CountryAndCapitalStruct();
             ConsoleKeyInfo choice;
 
             //open file
@@ -29,22 +28,21 @@ namespace TheHangman
             while ((line = file.ReadLine()) != null)
             {
                 words = line.Split(" | ");               // loading words from file to list
-                box.country = words[0];
-                box.capital = words[1];
+                box.Country = words[0];
+                box.Capital = words[1];
                 countryAndCapitalList.Add(box);
             }
-
             Console.WriteLine("The game Hangman");
             Console.WriteLine("\nWould you like to start? (press s to start, e to exit)");
+
             do
             {
                 choice = Console.ReadKey(true);
                 if (choice.KeyChar == 's' ^ choice.KeyChar == 'S') Game(countryAndCapitalList);   //start menu
             } while (choice.KeyChar != 'e' && choice.KeyChar != 'E');
-
         }
 
-        private static void Game(List<countryAndCapitalStruct> countryAndCapitalList)
+        private static void Game(List<CountryAndCapitalStruct> countryAndCapitalList)
         {
             bool winGame = false;
             int randomIndex;
@@ -59,7 +57,7 @@ namespace TheHangman
             Console.Clear();
             Random rnd = new Random();
             randomIndex = rnd.Next(countryAndCapitalList.Count);                      //  picking a random pair of
-            capitalToGuess = countryAndCapitalList.ElementAt(randomIndex).capital;    //  country and it's capitol
+            capitalToGuess = countryAndCapitalList.ElementAt(randomIndex).Capital;    //  country and it's capitol
             isLetterGuessed = new bool[capitalToGuess.Length];
 
             for (int i = 0; i < capitalToGuess.Length; i++)
@@ -77,7 +75,7 @@ namespace TheHangman
                     choice = Console.ReadKey(true);
                     if (choice.KeyChar == '1')
                     {
-                        Console.WriteLine("Podaj litere");
+                        Console.WriteLine("Write a letter");
                         userGuess = Console.ReadLine();
                         if (userGuess.Length != 1) continue;
 
@@ -120,11 +118,17 @@ namespace TheHangman
                 if (winGame)
                 {
                     Console.WriteLine("YOU WON!!!!");
-                    Console.WriteLine("Wait to play again");
-                    Thread.Sleep(5000);
                     break;
                 }
             }
+
+            if (!winGame)
+            {
+                Console.WriteLine("You lost...");
+                Console.WriteLine("The Capital that you had to guess: " + capitalToGuess);
+            }
+
+            Console.WriteLine("\nWould you like to start? (press s to start, e to exit)");
         }
 
         private static void CreateGameInterface(int lifes, int lettersLeft, string capitalToGuess, bool[] isLetterGuessed, string wrongLetters)
@@ -162,9 +166,8 @@ namespace TheHangman
                 }
                 counter++;
             }
-            Console.Write("\n\n");
+            Console.Write("\n");
             DrawHangman(lifes);
-
         }
 
         private static bool CheckLetter(char letter, string word, bool[] isLetterGuessed, ref string wrongLetters)
