@@ -70,7 +70,7 @@ namespace TheHangman
             bool winGame = false;
             short gameStatus = 0;
             int randomIndex;
-            int lifes = 6;
+            int lives = 6;
             int guessesNumber = 0;
             string userGuess;
             string capitalToGuess;
@@ -96,9 +96,9 @@ namespace TheHangman
 
             stopwatch.Start();
 
-            while (lifes > 0)
+            while (lives > 0)
             {
-                CreateGameInterface(lifes, countryOfCapitalToGuess, capitalToGuess, isLetterGuessed, wrongLetters, gameStatus);
+                CreateGameInterface(lives, countryOfCapitalToGuess, capitalToGuess, isLetterGuessed, wrongLetters, gameStatus);
 
                 if (winGame)        // check if game is done
                 {
@@ -119,7 +119,7 @@ namespace TheHangman
                         userGuess = Console.ReadLine();
                         if (userGuess.Length != 1) continue;
 
-                        if (CheckLetter(ref guessesNumber, ref lifes, userGuess[0], capitalToGuess, isLetterGuessed, ref wrongLetters))
+                        if (CheckLetter(ref guessesNumber, ref lives, userGuess[0], capitalToGuess, isLetterGuessed, ref wrongLetters))
                         {
                             gameStatus = 1;        // gameStatus = 1 means correct letter
                         }
@@ -143,7 +143,7 @@ namespace TheHangman
                         {
                             gameStatus = 4;            // gameStatus = 4 means wrong word
                             guessesNumber++;
-                            lifes -= 2;
+                            lives -= 2;
                         }
                     }
 
@@ -173,7 +173,7 @@ namespace TheHangman
 
             Console.Clear();
             Console.WriteLine("Press 1 to guess a letter, press 2 to guess a whole word");
-            Console.WriteLine("Lifes: " + lifes);
+            Console.WriteLine("Lives: " + lifes);
             Console.Write("Wrong letters: ");
             foreach (char letter in wrongLetters)
             {
