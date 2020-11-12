@@ -16,6 +16,19 @@ namespace TheHangman
             public string Capital { get; set; }
         }
 
+        public struct PlayerStats
+        {
+            public string Name { get; set; }
+
+            public string Date { get; set; }
+
+            public int GuessingTime { get; set; }
+
+            public int GuessedLettters { get; set; }
+
+            public string GuessedCapital { get; set; }
+        }
+
         static void Main(string[] args)
         {
             string line;
@@ -24,16 +37,18 @@ namespace TheHangman
             var box = new CountryAndCapitalStruct();
             ConsoleKeyInfo choice;
 
-            //open file
-            System.IO.StreamReader file = new System.IO.StreamReader(@"E:\Projekty\TheHangmanGame\TheHangman\resources\countries_and_capitals.txt");
+            //open files
+            System.IO.StreamReader fileWithCapitals = new System.IO.StreamReader(@"E:\Projekty\TheHangmanGame\TheHangman\resources\countries_and_capitals.txt");
+            System.IO.StreamReader fileWithTop10 = new System.IO.StreamReader(@"E:\Projekty\TheHangmanGame\TheHangman\resources\top10.txt");
 
-            while ((line = file.ReadLine()) != null)
+            while ((line = fileWithCapitals.ReadLine()) != null)
             {
-                words = line.Split(" | ");               // loading words from file to list
+                words = line.Split(" | ");                                              // loading words from file to list
                 box.Country = words[0];
                 box.Capital = words[1];
                 countryAndCapitalList.Add(box);
             }
+
             Console.WriteLine("The game Hangman");
             Console.WriteLine("\nWould you like to start? (press s to start, e to exit)");
 
@@ -137,7 +152,7 @@ namespace TheHangman
                 stopwatch.Stop();
                 timeSpan = stopwatch.Elapsed;
                 Console.WriteLine("You lost...");
-                Console.WriteLine("You guessed " + guessedLettersNumber +  " letters");
+                Console.WriteLine("You guessed " + guessedLettersNumber + " letters");
                 Console.WriteLine("The Capital that you had to guess: " + capitalToGuess);
                 Console.WriteLine("Your time: " + timeSpan.Seconds + " seconds");
             }
@@ -188,7 +203,7 @@ namespace TheHangman
             bool correct = false;
             bool firstTime = true;
 
-            for (int i = 0; i< wrongLetters.Length; i++)
+            for (int i = 0; i < wrongLetters.Length; i++)
             {
                 if (letter == wrongLetters[i])
                 {
