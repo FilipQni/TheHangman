@@ -5,4 +5,4 @@ This is a simple game The Hangman. The goal is to guess a randomly picked capita
 
 ### Few sentences about me:
 
-Programming for me is like a brush for painter or a hammer for mechanic. It's a tool that allows me create or improve codes. I enjoy creating, learning, and solving problems in code. That's why I study at university of technology in Gdańsk. It's my first application in C#, I used to work in C++ or Java, so I hope it hasn't lost in the quality.
+Programming for me is like a brush for a painter or a hammer for a mechanic. It's a tool that allows me to build or improve code. I enjoy creating, learning, and solving problems. That's why I study at university of technology in Gdańsk and in the future I'm going to work in IT-Branche. I used to write in C++, Java and it's my first contact with C#.
