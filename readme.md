@@ -1,5 +1,5 @@
 # The Hangman
-This is a simple game The Hangman. The goal is to guess a randomly picked capital with, by guessing a single letters or a whole word. Top 10 fastest games are saved in ranking.
+This is a simple game The Hangman. The goal is to guess a randomly picked capital, by guessing a single letters or a whole word. Top 10 fastest games are saved in ranking.
 
 ## Task in C# for Motorola Academy Team
 
